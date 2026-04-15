@@ -1,0 +1,124 @@
+networks:
+  besu-network:
+    external: true
+    name: permissioned-network_besu-net
+
+services:
+  besu-node1:
+    image: hyperledger/besu:26.1.0
+    container_name: besu-node1
+    networks:
+      besu-network:
+        ipv4_address: 172.20.0.2
+    ports:
+      - "8545:8545"
+      - "30303:30303"
+    volumes:
+      - ./Node-1/data:/data
+      - ./genesis.json:/genesis.json
+      - ./permissions_config.toml:/permissions_config.toml
+    command: >
+      --data-path=/data
+      --genesis-file=/genesis.json
+      --permissions-nodes-config-file-enabled
+      --permissions-accounts-config-file-enabled
+      --permissions-nodes-config-file=/permissions_config.toml
+      --rpc-http-enabled
+      --rpc-http-api=ADMIN,ETH,NET,PERM,IBFT
+      --rpc-http-host=0.0.0.0
+      --rpc-http-port=8545
+      --p2p-host=172.20.0.2
+      --p2p-port=30303
+      --host-allowlist=*
+      --rpc-http-cors-origins=*
+      --profile=ENTERPRISE
+
+  besu-node2:
+    image: hyperledger/besu:26.1.0
+    container_name: besu-node2
+    networks:
+      besu-network:
+        ipv4_address: 172.20.0.3
+    ports:
+      - "8546:8546"
+      - "30304:30304"
+    volumes:
+      - ./Node-2/data:/data
+      - ./genesis.json:/genesis.json
+      - ./permissions_config.toml:/permissions_config.toml
+    command: >
+      --data-path=/data
+      --genesis-file=/genesis.json
+      --permissions-nodes-config-file-enabled
+      --permissions-accounts-config-file-enabled
+      --permissions-nodes-config-file=/permissions_config.toml
+      --rpc-http-enabled
+      --rpc-http-api=ADMIN,ETH,NET,PERM,IBFT
+      --rpc-http-host=0.0.0.0
+      --rpc-http-port=8546
+      --p2p-host=172.20.0.3
+      --p2p-port=30304
+      --bootnodes=enode://39324ce53375bd38c8097375cc0504b09f7bb1fbd039f29dea16cc2e12e05cc98d5d5bfcb70004b0324fd9a1c9d4af6c71de216999deb4482cb97af119f22acc@172.20.0.2:30303
+      --host-allowlist=*
+      --rpc-http-cors-origins=*
+      --profile=ENTERPRISE
+
+  besu-node3:
+    image: hyperledger/besu:26.1.0
+    container_name: besu-node3
+    networks:
+      besu-network:
+        ipv4_address: 172.20.0.4
+    ports:
+      - "8547:8547"
+      - "30305:30305"
+    volumes:
+      - ./Node-3/data:/data
+      - ./genesis.json:/genesis.json
+      - ./permissions_config.toml:/permissions_config.toml
+    command: >
+      --data-path=/data
+      --genesis-file=/genesis.json
+      --permissions-nodes-config-file-enabled
+      --permissions-accounts-config-file-enabled
+      --permissions-nodes-config-file=/permissions_config.toml
+      --rpc-http-enabled
+      --rpc-http-api=ADMIN,ETH,NET,PERM,IBFT
+      --rpc-http-host=0.0.0.0
+      --rpc-http-port=8547
+      --p2p-host=172.20.0.4
+      --p2p-port=30305
+      --bootnodes=enode://39324ce53375bd38c8097375cc0504b09f7bb1fbd039f29dea16cc2e12e05cc98d5d5bfcb70004b0324fd9a1c9d4af6c71de216999deb4482cb97af119f22acc@172.20.0.2:30303
+      --host-allowlist=*
+      --rpc-http-cors-origins=*
+      --profile=ENTERPRISE
+
+  besu-node4:
+    image: hyperledger/besu:26.1.0
+    container_name: besu-node4
+    networks:
+      besu-network:
+        ipv4_address: 172.20.0.5
+    ports:
+      - "8548:8548"
+      - "30306:30306"
+    volumes:
+      - ./Node-4/data:/data
+      - ./genesis.json:/genesis.json
+      - ./permissions_config.toml:/permissions_config.toml
+    command: >
+      --data-path=/data
+      --genesis-file=/genesis.json
+      --permissions-nodes-config-file-enabled
+      --permissions-accounts-config-file-enabled
+      --permissions-nodes-config-file=/permissions_config.toml
+      --rpc-http-enabled
+      --rpc-http-api=ADMIN,ETH,NET,PERM,IBFT
+      --rpc-http-host=0.0.0.0
+      --rpc-http-port=8548
+      --p2p-host=172.20.0.5
+      --p2p-port=30306
+      --bootnodes=enode://39324ce53375bd38c8097375cc0504b09f7bb1fbd039f29dea16cc2e12e05cc98d5d5bfcb70004b0324fd9a1c9d4af6c71de216999deb4482cb97af119f22acc@172.20.0.2:30303
+      --host-allowlist=*
+      --rpc-http-cors-origins=*
+      --profile=ENTERPRISE
