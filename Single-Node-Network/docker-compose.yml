@@ -1,0 +1,35 @@
+networks:
+  besu-single-net:
+    name: besu-single-net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.31.255.0/24
+
+services:
+  besu-single-node1:
+    image: hyperledger/besu:26.1.0
+    container_name: besu-single-node1
+    restart: unless-stopped
+    networks:
+      besu-single-net:
+        ipv4_address: 172.31.255.2
+    ports:
+      - "8555:8555"
+      - "30403:30403"
+    volumes:
+      - ./Node-1/data:/data
+      - ./genesis.json:/genesis.json:ro
+    command: >
+      --data-path=/data
+      --genesis-file=/genesis.json
+      --rpc-http-enabled
+      --rpc-http-api=ADMIN,ETH,NET,WEB3,TXPOOL,IBFT
+      --rpc-http-host=0.0.0.0
+      --rpc-http-port=8555
+      --p2p-host=172.31.255.2
+      --p2p-port=30403
+      --host-allowlist=*
+      --rpc-http-cors-origins=*
+      --min-gas-price=0
+      --profile=ENTERPRISE
