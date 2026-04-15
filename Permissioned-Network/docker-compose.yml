@@ -1,14 +1,17 @@
 networks:
-  besu-network:
-    external: true
+  besu-net:
     name: permissioned-network_besu-net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
 
 services:
   besu-node1:
     image: hyperledger/besu:26.1.0
     container_name: besu-node1
     networks:
-      besu-network:
+      besu-net:
         ipv4_address: 172.20.0.2
     ports:
       - "8545:8545"
@@ -23,6 +26,7 @@ services:
       --permissions-nodes-config-file-enabled
       --permissions-accounts-config-file-enabled
       --permissions-nodes-config-file=/permissions_config.toml
+      --permissions-accounts-config-file=/permissions_config.toml
       --rpc-http-enabled
       --rpc-http-api=ADMIN,ETH,NET,PERM,IBFT
       --rpc-http-host=0.0.0.0
@@ -37,7 +41,7 @@ services:
     image: hyperledger/besu:26.1.0
     container_name: besu-node2
     networks:
-      besu-network:
+      besu-net:
         ipv4_address: 172.20.0.3
     ports:
       - "8546:8546"
@@ -52,6 +56,7 @@ services:
       --permissions-nodes-config-file-enabled
       --permissions-accounts-config-file-enabled
       --permissions-nodes-config-file=/permissions_config.toml
+      --permissions-accounts-config-file=/permissions_config.toml
       --rpc-http-enabled
       --rpc-http-api=ADMIN,ETH,NET,PERM,IBFT
       --rpc-http-host=0.0.0.0
@@ -67,7 +72,7 @@ services:
     image: hyperledger/besu:26.1.0
     container_name: besu-node3
     networks:
-      besu-network:
+      besu-net:
         ipv4_address: 172.20.0.4
     ports:
       - "8547:8547"
@@ -82,6 +87,7 @@ services:
       --permissions-nodes-config-file-enabled
       --permissions-accounts-config-file-enabled
       --permissions-nodes-config-file=/permissions_config.toml
+      --permissions-accounts-config-file=/permissions_config.toml
       --rpc-http-enabled
       --rpc-http-api=ADMIN,ETH,NET,PERM,IBFT
       --rpc-http-host=0.0.0.0
@@ -97,7 +103,7 @@ services:
     image: hyperledger/besu:26.1.0
     container_name: besu-node4
     networks:
-      besu-network:
+      besu-net:
         ipv4_address: 172.20.0.5
     ports:
       - "8548:8548"
@@ -112,6 +118,7 @@ services:
       --permissions-nodes-config-file-enabled
       --permissions-accounts-config-file-enabled
       --permissions-nodes-config-file=/permissions_config.toml
+      --permissions-accounts-config-file=/permissions_config.toml
       --rpc-http-enabled
       --rpc-http-api=ADMIN,ETH,NET,PERM,IBFT
       --rpc-http-host=0.0.0.0
