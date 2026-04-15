@@ -1,0 +1,58 @@
+services:
+  validator-node:
+    image: hyperledger/besu:26.1.0
+    container_name: ${VALIDATOR_CONTAINER_NAME:-besu-validator5}
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${VALIDATOR_RPC_PORT:-8549}:8545"
+      - "${VALIDATOR_P2P_PORT:-30303}:30303"
+    volumes:
+      - ./validator-data:/data
+      - ./genesis.json:/genesis.json:ro
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        cat > /tmp/permissions_config.toml <<EOF
+        accounts-allowlist=[
+          "0x7fb1fc0873e1ce7f016eec736bb75b7fddd44717",
+          "0x717cbcf10015709a38c9429f8b2626129896b369"
+        ]
+
+        nodes-allowlist=[
+          "enode://39324ce53375bd38c8097375cc0504b09f7bb1fbd039f29dea16cc2e12e05cc98d5d5bfcb70004b0324fd9a1c9d4af6c71de216999deb4482cb97af119f22acc@${BOOTNODE1_HOST}:30303",
+          "enode://9e316c7015626a7d0c60d7c5f6b5e87d099f59e359b0f6c023419b1ecda961a141baabf39b63a25f83fe03ee08336b02bb78261c525a1264bcb46a9dab54fef1@${BOOTNODE2_HOST}:30304",
+          "enode://23abe9c2880872e554d9cf2808d5835bfcf5f63b807f73a2871c8c87652ba2991247e11c3af924eaba9c4317708a9cfada5d5f6207acdf0ddd2e1cda352d578a@${BOOTNODE3_HOST}:30305",
+          "enode://524acc9d54d8b61b42f85eaa6df0beee9c29fb4c91eb4be716d14563467ab11d4312bf48d7f4d9f1d87905b5536b053d4e64f4d9c5b71a5d5c19b662a40f349f@${BOOTNODE4_HOST}:30306",
+          "enode://${VALIDATOR_ENODE_PUBKEY}@${VALIDATOR_HOST_IP}:30303"
+        ]
+        EOF
+
+        cat > /data/static-nodes.json <<EOF
+        [
+          "enode://39324ce53375bd38c8097375cc0504b09f7bb1fbd039f29dea16cc2e12e05cc98d5d5bfcb70004b0324fd9a1c9d4af6c71de216999deb4482cb97af119f22acc@${BOOTNODE1_HOST}:30303",
+          "enode://9e316c7015626a7d0c60d7c5f6b5e87d099f59e359b0f6c023419b1ecda961a141baabf39b63a25f83fe03ee08336b02bb78261c525a1264bcb46a9dab54fef1@${BOOTNODE2_HOST}:30304",
+          "enode://23abe9c2880872e554d9cf2808d5835bfcf5f63b807f73a2871c8c87652ba2991247e11c3af924eaba9c4317708a9cfada5d5f6207acdf0ddd2e1cda352d578a@${BOOTNODE3_HOST}:30305",
+          "enode://524acc9d54d8b61b42f85eaa6df0beee9c29fb4c91eb4be716d14563467ab11d4312bf48d7f4d9f1d87905b5536b053d4e64f4d9c5b71a5d5c19b662a40f349f@${BOOTNODE4_HOST}:30306"
+        ]
+        EOF
+
+        exec /opt/besu/bin/besu \
+          --data-path=/data \
+          --genesis-file=/genesis.json \
+          --permissions-nodes-config-file-enabled \
+          --permissions-accounts-config-file-enabled \
+          --permissions-nodes-config-file=/tmp/permissions_config.toml \
+          --permissions-accounts-config-file=/tmp/permissions_config.toml \
+          --rpc-http-enabled \
+          --rpc-http-api=ADMIN,ETH,NET,PERM,IBFT \
+          --rpc-http-host=0.0.0.0 \
+          --rpc-http-port=8545 \
+          --p2p-host=${VALIDATOR_HOST_IP} \
+          --p2p-port=30303 \
+          --bootnodes=enode://39324ce53375bd38c8097375cc0504b09f7bb1fbd039f29dea16cc2e12e05cc98d5d5bfcb70004b0324fd9a1c9d4af6c71de216999deb4482cb97af119f22acc@${BOOTNODE1_HOST}:30303,enode://9e316c7015626a7d0c60d7c5f6b5e87d099f59e359b0f6c023419b1ecda961a141baabf39b63a25f83fe03ee08336b02bb78261c525a1264bcb46a9dab54fef1@${BOOTNODE2_HOST}:30304,enode://23abe9c2880872e554d9cf2808d5835bfcf5f63b807f73a2871c8c87652ba2991247e11c3af924eaba9c4317708a9cfada5d5f6207acdf0ddd2e1cda352d578a@${BOOTNODE3_HOST}:30305,enode://524acc9d54d8b61b42f85eaa6df0beee9c29fb4c91eb4be716d14563467ab11d4312bf48d7f4d9f1d87905b5536b053d4e64f4d9c5b71a5d5c19b662a40f349f@${BOOTNODE4_HOST}:30306 \
+          --host-allowlist=* \
+          --rpc-http-cors-origins=* \
+          --profile=ENTERPRISE
